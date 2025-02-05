@@ -2,79 +2,107 @@ from threading import Thread
 from time import sleep
 from djitellopy import TelloSwarm, Tello
 
-# Pomoću Tello Edu aplikacije i hot spota unesite IP adrese dronova
-All = TelloSwarm.fromIps([
-    '192.168.137.61',  # IP adresa prvog drona
-    '192.168.137.182',   # IP adresa drugog drona
-    '192.168.137.177'    # IP adresa trećeg drona
-])
+# Definicija dronova i njihovih IP adresa
+drones = {
+    "Alen": "192.168.137.107",
+    "Goran": "192.168.137.52",
+}
 
-# Unesite različita imena varijabli za dronove u swarmu
-drone1 = TelloSwarm.fromIps(['192.168.137.61'])  # Prvi dron
-drone2 = TelloSwarm.fromIps(['192.168.137.182'])  # Drugi dron
-drone3 = TelloSwarm.fromIps(['192.168.137.177'])  # Treći dron
+# Povezivanje svih dronova putem njihovih IP adresa
+All = TelloSwarm.fromIps([ip for ip in drones.values()])
 
-# Maksimalna visina leta
-MAX_HEIGHT = 170
+# Inicijalizacija pojedinačnih dronova i dodavanje imena
+drone_objects = {}
+for name, ip in drones.items():
+    drone = Tello(ip)
+    drone.drone_name = name  # Dodajemo atribut za ime
+    drone_objects[name] = drone
 
-def execute_command(drone, command, *args):
-    """Izvršava komandu i čeka potvrdu da je završena"""
+# Maksimalna visina
+MAX_HEIGHT = 100
+
+def execute_command(drone_name, drone, command, *args):
+    """Izvršava komandu i prikazuje ime drona u ispisu"""
     try:
-        getattr(drone, command)(*args)
-        sleep(2)  # Pauza za stabilnost
+        print(f"🛸 {drone_name} izvodi naredbu: {command} {args}")
+        response = getattr(drone, command)(*args)
+        sleep(1)  # Pauza za stabilnost
+        print(f"✅ {drone_name} response: {response}")  # Dodan response u output
     except Exception as e:
-        print(f"Greška kod drona {drone}: {str(e)}")
+        print(f"⚠️ Greška kod drona {drone_name}: {str(e)}")
 
-# Funkcija za žongliranje dronova
-def drone1_juggle():
+# 🔋 Dohvati stanje baterije i prikaži ime drona
+def get_battery_status(drone_name, drone):
+    """Dohvaća stanje baterije drona i ispisuje ime drona u response"""
+    try:
+        battery = drone.send_command_with_return("battery?")  # Ispravan način dohvaćanja baterije
+        print(f"🔋 Stanje baterije na {drone_name} dronu ({drones[drone_name]}) je {battery}%")
+        return battery
+    except Exception as e:
+        print(f"⚠️ Greška pri dohvaćanju baterije za {drone_name}: {str(e)}")
+        return None
+
+# 🔥 Spektakularni manevri 🔥
+def spiral_maneuver(drone_name, drone):
+    """Dron leti u spirali prema gore"""
+    for _ in range(5):
+        execute_command(drone_name, drone, 'move_up', 10)
+        execute_command(drone_name, drone, 'rotate_clockwise', 45)
+        execute_command(drone_name, drone, 'move_forward', 50)
+
+def wave_movement(drone_name, drone):
+    """Dron se kreće sinusoidno (gore-dolje)"""
     for _ in range(3):
-        execute_command(drone1, 'move_up', min(50, MAX_HEIGHT - 40))
-        execute_command(drone1, 'move_forward', 150)
-        execute_command(drone1, 'move_down', 50)
-        execute_command(drone1, 'move_back', 50)
-
-def drone2_juggle():
-    sleep(1)  # Lagano kašnjenje kako bi izgledalo kao žongliranje
+        execute_command(drone_name, drone, 'move_up', 20)
+        execute_command(drone_name, drone, 'move_down', 20)
+        
+def drone_dance():
+    """Svi dronovi sinkronizirano plešu u zraku"""
     for _ in range(3):
-        execute_command(drone2, 'move_up', min(50, MAX_HEIGHT - 20))
-        execute_command(drone2, 'move_forward', 120)
-        execute_command(drone2, 'move_down', 50)
-        execute_command(drone2, 'move_back', 50)
+        print("🕺 Svi dronovi plešu!")
+        All.move_left(50)
+        All.move_right(50)
+        All.rotate_clockwise(90)
+        All.rotate_counter_clockwise(90)
 
-def drone3_juggle():
-    sleep(2)  # Još jedno kašnjenje kako bi izgledalo kao izmjena loptica
-    for _ in range(3):
-        execute_command(drone3, 'move_up', min(50, MAX_HEIGHT - 50))
-        execute_command(drone3, 'move_forward', 150)
-        execute_command(drone3, 'move_down', 50)
-        execute_command(drone3, 'move_back', 50)
-
-# Povežite dronove i započnite let
+# Poveži dronove i započni show
+print("🔌 Povezivanje dronova...")
 All.connect()
 
-# Provjeri bateriju prije leta
-'''battery_levels = [drone.get_battery() for drone in [drone1, drone2, drone3]]
-if min(battery_levels) < 20:
-    print("Baterija je preniska! Nemojte letjeti.")
-    All.end()
-    exit()'''
+# Provjera baterije svakog drona prije leta
+for name, drone in drone_objects.items():
+    get_battery_status(name, drone)
 
+print("🚀 Svi dronovi polijeću!")
 All.takeoff()
 
-# Pokrećemo zasebne threadove za svaki dron s različitim uzorcima leta
-t1 = Thread(target=drone1_juggle)
-t2 = Thread(target=drone2_juggle)
-t3 = Thread(target=drone3_juggle)
+# Početni formacijski let
+All.move_up(30)
+All.move_forward(100)
+All.rotate_clockwise(90)
 
-t1.start()
-t2.start()
-t3.start()
+# Pokretanje spektakularnih manevra u odvojenim threadovima
+threads = []
+for name, drone in drone_objects.items():
+    if name == "Alen":
+        t = Thread(target=wave_movement, args=(name, drone))
+    elif name == "Goran":
+        t = Thread(target=wave_movement, args=(name, drone))
+    else:
+        continue  # Ako ima više dronova, dodaj nove manevre ovdje
 
-# Čeka završetak svih threadova
-t1.join()
-t2.join()
-t3.join()
+    threads.append(t)
+    t.start()
 
-# Sigurno spuštanje i prekid veze
+# Čekamo završetak svih manevra
+for t in threads:
+    t.join()
+sleep(2)
+
+# Završni ples u zraku
+drone_dance()
+
+# Sigurno spuštanje
+print("🛬 Svi dronovi slijeću...")
 All.land()
 All.end()
