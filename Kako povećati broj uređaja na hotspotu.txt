@@ -1,0 +1,5 @@
+- otvori regedit 
+- odi na HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\icssvc\Settings
+- kreiraj fajl WifiMaxPeers
+- dodaj u valuedata 128 te opciju decimal
+- restartaj računalo

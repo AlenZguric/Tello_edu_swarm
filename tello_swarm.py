@@ -3,30 +3,42 @@ from time import sleep
 from djitellopy import TelloSwarm, Tello
 
 # Definicija dronova i njihovih IP adresa
-drones = {
-    "Alen": "192.168.137.107",
-    "Goran": "192.168.137.52",
-}
+# Definicija IP adresa dronova
+dron1 = "192.168.137.114"
+dron2 = "192.168.137.88"
+dron3 = "192.168.137.9"
+dron4 = "192.168.137.21"
+
+
+# Organizacija dronova u redove
+prvi_red = [dron1, dron2]
+drugi_red = [dron3, dron4]
+
+# Kreiramo listu svih dronova
+svi_dronovi = prvi_red + drugi_red 
 
 # Povezivanje svih dronova putem njihovih IP adresa
-All = TelloSwarm.fromIps([ip for ip in drones.values()])
+All = TelloSwarm.fromIps(svi_dronovi)
 
 # Inicijalizacija pojedinačnih dronova i dodavanje imena
+# Inicijalizacija dronova s imenima Red_X_Dron_Y
 drone_objects = {}
-for name, ip in drones.items():
-    drone = Tello(ip)
-    drone.drone_name = name  # Dodajemo atribut za ime
-    drone_objects[name] = drone
+for i, row in enumerate([prvi_red, drugi_red], start=1):
+    for j, ip in enumerate(row, start=1):
+        name = f"Red_{i}_Dron_{j}"
+        drone = Tello(ip)
+        drone.drone_name = name
+        drone_objects[name] = drone
 
-# Maksimalna visina
-MAX_HEIGHT = 100
+
+
 
 def execute_command(drone_name, drone, command, *args):
     """Izvršava komandu i prikazuje ime drona u ispisu"""
     try:
         print(f"🛸 {drone_name} izvodi naredbu: {command} {args}")
         response = getattr(drone, command)(*args)
-        sleep(1)  # Pauza za stabilnost
+        sleep(1.5)  # Pauza za stabilnost
         print(f"✅ {drone_name} response: {response}")  # Dodan response u output
     except Exception as e:
         print(f"⚠️ Greška kod drona {drone_name}: {str(e)}")
@@ -35,26 +47,32 @@ def execute_command(drone_name, drone, command, *args):
 def get_battery_status(drone_name, drone):
     """Dohvaća stanje baterije drona i ispisuje ime drona u response"""
     try:
-        battery = drone.send_command_with_return("battery?")  # Ispravan način dohvaćanja baterije
-        print(f"🔋 Stanje baterije na {drone_name} dronu ({drones[drone_name]}) je {battery}%")
+        battery = drone.get_battery()
+        print(f"🔋 Stanje baterije na {drone_name} je {battery}%")
         return battery
     except Exception as e:
         print(f"⚠️ Greška pri dohvaćanju baterije za {drone_name}: {str(e)}")
         return None
 
-# 🔥 Spektakularni manevri 🔥
+
+'''# 🔥 Spektakularni manevri 🔥
 def spiral_maneuver(drone_name, drone):
     """Dron leti u spirali prema gore"""
-    for _ in range(5):
-        execute_command(drone_name, drone, 'move_up', 10)
+    for _ in range(3):
+        execute_command(drone_name, drone, 'move_up', 30)
+       # sleep(0.2)
         execute_command(drone_name, drone, 'rotate_clockwise', 45)
+       # sleep(0.2)
         execute_command(drone_name, drone, 'move_forward', 50)
+       # sleep(0.2)
+
 
 def wave_movement(drone_name, drone):
     """Dron se kreće sinusoidno (gore-dolje)"""
-    for _ in range(3):
-        execute_command(drone_name, drone, 'move_up', 20)
-        execute_command(drone_name, drone, 'move_down', 20)
+    for _ in range(5):
+         execute_command(drone_name, drone, 'move_up', 30)
+        # sleep(0.2)
+         execute_command(drone_name, drone, 'move_down', 25)
         
 def drone_dance():
     """Svi dronovi sinkronizirano plešu u zraku"""
@@ -64,10 +82,12 @@ def drone_dance():
         All.move_right(50)
         All.rotate_clockwise(90)
         All.rotate_counter_clockwise(90)
-
+'''
 # Poveži dronove i započni show
 print("🔌 Povezivanje dronova...")
 All.connect()
+
+
 
 # Provjera baterije svakog drona prije leta
 for name, drone in drone_objects.items():
@@ -77,32 +97,105 @@ print("🚀 Svi dronovi polijeću!")
 All.takeoff()
 
 # Početni formacijski let
-All.move_up(30)
+def prviRed():
+    for i, row in enumerate([prvi_red], start=1):
+        print(f"🚀 Red {i} izvodi manevar...")
+        row_swarm = TelloSwarm.fromIps(row)
+        row_swarm.move_up(100)
+        row_swarm.move_back(100)
+        row_swarm.move_down(100)
+        row_swarm.move_forward(100)
+        
+
+    
+def drugiRed():
+    for i, row in enumerate([drugi_red], start=1):
+        print(f"🚀 Red {i} izvodi manevar...")
+        row_swarm = TelloSwarm.fromIps(row)
+        row_swarm.move_forward(100)
+        row_swarm.move_up(100)
+        row_swarm.move_back(100) 
+        row_swarm.move_down(100)
+      
+
+        
+    
+
+    
+'''def wave_movement(drone_name, drone):
+    print(f"{drone_name} slijeće")
+    drone.land()'''
+    
+#All.sequential(lambda i, drone: drone.land())
+
+'''def keep_alive():
+    for i in All:        
+        i.send_read_command("command")
+        
+keep_alive(prvi_red, drugi_red)'''
+        
+
+        
+# for i in All.tellos: i.send_read_command("rc 0 0 0 0")
+    
+
+    
+ 
+
+'''for name in ["Danijel", "Goran", "Zadnji"]:
+    if name not in drone_objects: 
+        name.send_rc_control(0,0,0,0)# Provjeri postoji li dron u rječniku
+    else:   
+        drone_objects[name].move_up(30)
+       
+        #drone_objects[name].flip_forward()'''
+        
+#All.send_rc_control(0,0,0,0)
+'''All.move_up(30)
 All.move_forward(100)
-All.rotate_clockwise(90)
+All.rotate_clockwise(90)'''
+
+
+t1 = Thread(target=prviRed)
+
+t2 = Thread(target=drugiRed)
 
 # Pokretanje spektakularnih manevra u odvojenim threadovima
-threads = []
+'''threads = []
 for name, drone in drone_objects.items():
     if name == "Alen":
         t = Thread(target=wave_movement, args=(name, drone))
+    elif name == "Djuro":
+        t = Thread(target=wave_movement, args=(name, drone))
     elif name == "Goran":
+        t = Thread(target=wave_movement, args=(name, drone))
+    elif name == "Danijel":
+        t = Thread(target=wave_movement, args=(name, drone))
+    elif name == "Zadnji":
+        t = Thread(target=wave_movement, args=(name, drone))
+    elif name == "Predzadnji":
         t = Thread(target=wave_movement, args=(name, drone))
     else:
         continue  # Ako ima više dronova, dodaj nove manevre ovdje
 
     threads.append(t)
-    t.start()
-
+    t.start()'''
+    
+t1.start()
+t2.start()
 # Čekamo završetak svih manevra
-for t in threads:
-    t.join()
-sleep(2)
+t1.join()
+t2.join()
+
 
 # Završni ples u zraku
-drone_dance()
+#drone_dance()
 
 # Sigurno spuštanje
 print("🛬 Svi dronovi slijeću...")
 All.land()
+
+for name, drone in drone_objects.items():
+    get_battery_status(name, drone)
+    
 All.end()
