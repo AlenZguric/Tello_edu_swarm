@@ -2,17 +2,28 @@ from threading import Thread
 from time import sleep
 from djitellopy import TelloSwarm, Tello
 
+
 # Definicija dronova i njihovih IP adresa
 # Definicija IP adresa dronova
-dron1 = "192.168.137.114"
-dron2 = "192.168.137.88"
-dron3 = "192.168.137.9"
-dron4 = "192.168.137.21"
+dron1 = "192.168.137.78"
+dron2 = "192.168.137.142"
+dron3 = "192.168.137.205"
+dron4 = "192.168.137.234"
+#dron5 = "192.168.137.227"
+#dron6 = "192.168.137.132"
+dron7 = "192.168.137.60"
+dron8 = "192.168.137.218"
+dron9 = "192.168.137.155"
+#dron10 = "192.168.137.176"
+dron11 = "192.168.137.135"
+#dron12 = "192.168.137.82"
+
 
 
 # Organizacija dronova u redove
-prvi_red = [dron1, dron2]
-drugi_red = [dron3, dron4]
+prvi_red = [dron1, dron2, dron3, dron4,  ]
+drugi_red = [dron7, dron8, dron9, dron11 ]
+
 
 # Kreiramo listu svih dronova
 svi_dronovi = prvi_red + drugi_red 
@@ -93,6 +104,7 @@ All.connect()
 for name, drone in drone_objects.items():
     get_battery_status(name, drone)
 
+
 print("🚀 Svi dronovi polijeću!")
 All.takeoff()
 
@@ -101,10 +113,11 @@ def prviRed():
     for i, row in enumerate([prvi_red], start=1):
         print(f"🚀 Red {i} izvodi manevar...")
         row_swarm = TelloSwarm.fromIps(row)
-        row_swarm.move_up(100)
+        row_swarm.move_up(120)
         row_swarm.move_back(100)
-        row_swarm.move_down(100)
+        row_swarm.move_down(120)
         row_swarm.move_forward(100)
+        
         
 
     
