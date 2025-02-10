@@ -1,5 +1,5 @@
 # **Dron Swarm - Sinhronizirani Let Tello Dronova**
-
+[Watch video on youtube](https://youtu.be/XPST8MOr8c0)
 ## **📌 Opis Projekta**
 Ovaj projekt omogućuje **sinkronizirani let više Tello dronova**, koristeći **Python i biblioteku djitellopy**. Implementira **žongliranje dronovima**, pri čemu se svaki dron kreće prema unaprijed definiranim obrascima koristeći **multithreading** za paralelnu kontrolu.
 
