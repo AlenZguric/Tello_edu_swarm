@@ -1,80 +1,81 @@
-# **Dron Swarm - Sinhronizirani Let Tello Dronova**
-[Watch video on youtube](https://youtu.be/XPST8MOr8c0)
-## **📌 Opis Projekta**
-Ovaj projekt omogućuje **sinkronizirani let više Tello dronova**, koristeći **Python i biblioteku djitellopy**. Implementira **žongliranje dronovima**, pri čemu se svaki dron kreće prema unaprijed definiranim obrascima koristeći **multithreading** za paralelnu kontrolu.
+# **Drone Swarm - Synchronized Flight of Tello Drones**
+[Watch video on YouTube](https://youtu.be/XPST8MOr8c0)
+
+## **📌 Project Description**
+This project enables **synchronized flight of multiple Tello drones** using **Python and the djitellopy library**. It implements **drone juggling**, where each drone moves according to predefined patterns.
 
 ---
 
-## **📦 Preduvjeti**
-### **🔧 Hardverski zahtjevi:**
-- **Tello Edu dronovi** (minimalno 3)
-- **WiFi hotspot ili Tello aplikacija** za povezivanje dronova
-- **Računalo sa stabilnom mrežnom vezom**
+## **📦 Prerequisites**
 
-### **💾 Softverski zahtjevi:**
-- **Python 3.7+** (preporučena verzija)
-- Instalirana biblioteka **djitellopy**
-- **Threading** za multithreading izvršavanje komandi
+### **🔧 Hardware Requirements:**
+- **Tello Edu drones** (at least 3)
+- **WiFi hotspot or Tello app** for connecting the drones
+- **Computer with a stable network connection**
+
+### **💾 Software Requirements:**
+- **Python 3.7+** (recommended version)
+- Installed **djitellopy library**
+- **Threading** for multithreading command execution
 
 ---
 
-## **🔧 Instalacija**
+## **🔧 Installation**
 
-Prije pokretanja koda, potrebno je instalirati djitellopy biblioteku:
+Before running the code, you need to install the djitellopy library:
 
 ```bash
 pip install djitellopy
 ```
 
-Provjeri je li Python instaliran pomoću:
+Check if Python is installed using:
 
 ```bash
 python --version
 ```
 
-Ako nije, instaliraj ga sa [Python službene stranice](https://www.python.org/downloads/).
+If not, install it from the [official Python website](https://www.python.org/downloads/).
 
 ---
 
-## **🚀 Pokretanje Projekta**
+## **🚀 Running the Project**
 
-1️⃣ **Poveži Tello dronove na istu WiFi mrežu** (Tello Edu aplikacija ili mobilni hotspot).  
-2️⃣ **Prilagodi IP adrese dronova** u kodu kako bi odgovarale tvojoj mreži:
+1️⃣ **Connect Tello drones to the same WiFi network** (Tello Edu app or mobile hotspot).  
+2️⃣ **Adjust drone IP addresses** in the code to match your network:
 
 ```python
 All = TelloSwarm.fromIps([
-    '192.168.137.61',  # IP prvog drona
-    '192.168.137.182', # IP drugog drona
-    '192.168.137.177'  # IP trećeg drona
+    '192.168.137.61',  # IP of the first drone
+    '192.168.137.182', # IP of the second drone
+    '192.168.137.177'  # IP of the third drone
 ])
 ```
 
-3️⃣ **Pokreni Python skriptu**:
+3️⃣ **Run the Python script**:
 ```bash
 python swarm.py
 ```
 
 ---
 
-## **⚠️ Sigurnosne Napomene**
+## **⚠️ Safety Notes**
 
-🛑 **Provjeri baterije dronova prije polijetanja** – niska baterija može dovesti do naglog pada drona.  
-🛑 **Leti u zatvorenom prostoru** ili na otvorenom bez jakog vjetra.  
-🛑 **Postavi sigurnu zonu** – osiguraj dovoljno prostora kako bi dronovi izbjegli sudare.  
-🛑 **U slučaju greške, koristi ručnu komandu** za hitno slijetanje:
+🛑 **Check drone batteries before takeoff** – low battery can cause sudden drone drop.  
+🛑 **Fly indoors** or outdoors without strong wind.  
+🛑 **Establish a safe zone** – ensure enough space to avoid drone collisions.  
+🛑 **In case of an error, use the manual command** for emergency landing:
 ```python
 All.land()
 ```
 
 ---
 
-## **📜 Funkcionalnosti Koda**
+## **📜 Code Features**
 
-✅ **Povezivanje s više Tello dronova putem IP adresa**  
-✅ **Automatsko uzlijetanje i koordinirani let**  
-✅ **Multithreading za istovremene pokrete više dronova**  
-✅ **Sigurno slijetanje i prekid veze**  
+✅ **Connecting to multiple Tello drones via IP addresses**  
+✅ **Automatic takeoff and coordinated flight**  
+✅ **Multithreading for simultaneous movements of multiple drones**  
+✅ **Safe landing and disconnection**  
 
 ---
-
 
